@@ -1,0 +1,96 @@
+[
+  {
+    "id": "ev-001",
+    "kind": "symptom",
+    "source": "patient",
+    "captureMethod": "voice",
+    "language": "ta-IN",
+    "originalValue": "எனக்கு மூன்று நாட்களாக மார்பு வலி இருக்கிறது",
+    "value": "chest pain for 3 days",
+    "normalized": {
+      "system": "SNOMED CT",
+      "code": "29857009",
+      "display": "Chest pain"
+    },
+    "status": "active",
+    "certainty": "stated",
+    "confidence": 0.94,
+    "provenance": {
+      "sourceId": "intake-session-001",
+      "sourceTitle": "Patient intake conversation",
+      "eventDate": "2026-08-30T10:15:00+05:30",
+      "ingestedAt": "2026-08-30T10:15:08+05:30",
+      "locator": "conversation-turn-07"
+    }
+  },
+  {
+    "id": "ev-002",
+    "kind": "allergy",
+    "source": "document",
+    "captureMethod": "ocr",
+    "language": "en-IN",
+    "originalValue": "Allergy: Penicillin",
+    "value": "Penicillin",
+    "normalized": {
+      "system": "SNOMED CT",
+      "display": "Allergy to penicillin"
+    },
+    "status": "active",
+    "certainty": "stated",
+    "confidence": 0.88,
+    "provenance": {
+      "sourceId": "document-042",
+      "sourceTitle": "Discharge Summary",
+      "facility": "Demo Hospital",
+      "eventDate": "2026-05-12T00:00:00+05:30",
+      "ingestedAt": "2026-08-30T10:20:00+05:30",
+      "locator": "page-2/allergies"
+    }
+  },
+  {
+    "id": "ev-003",
+    "kind": "lab_result",
+    "source": "fhir",
+    "captureMethod": "fhir",
+    "language": "en-IN",
+    "originalValue": "HbA1c 8.2 %",
+    "value": 8.2,
+    "normalized": {
+      "system": "LOINC",
+      "code": "4548-4",
+      "display": "Hemoglobin A1c",
+      "unit": "%",
+      "value": 8.2
+    },
+    "status": "active",
+    "certainty": "stated",
+    "confidence": 1,
+    "provenance": {
+      "sourceId": "observation-987",
+      "sourceTitle": "FHIR Observation",
+      "facility": "Demo Laboratory",
+      "eventDate": "2026-08-25T09:00:00+05:30",
+      "ingestedAt": "2026-08-30T10:21:00+05:30",
+      "locator": "Observation/observation-987"
+    }
+  },
+  {
+    "id": "ev-004",
+    "kind": "ayush_prakriti",
+    "source": "patient",
+    "captureMethod": "touch",
+    "language": "en-IN",
+    "originalValue": "Predominantly Vata",
+    "value": "Vata",
+    "status": "active",
+    "certainty": "stated",
+    "confidence": 0.91,
+    "provenance": {
+      "sourceId": "intake-session-001",
+      "sourceTitle": "AYUSH intake",
+      "eventDate": "2026-08-30T10:30:00+05:30",
+      "ingestedAt": "2026-08-30T10:30:10+05:30",
+      "locator": "ayush/dashavidha/prakriti"
+    }
+  }
+]
