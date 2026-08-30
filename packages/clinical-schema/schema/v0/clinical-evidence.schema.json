@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://setu-health.dev/schema/v0/clinical-evidence.json",
+  "title": "SETU Clinical Evidence",
+  "type": "object",
+  "required": ["id", "kind", "value", "provenance"],
+  "properties": {
+    "id": {"type": "string"},
+    "kind": {"type": "string"},
+    "value": {"type": ["string", "number", "boolean", "object", "array", "null"]},
+    "normalized": {"type": "object"},
+    "status": {"type": "string"},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "provenance": {
+      "type": "object",
+      "required": ["sourceType"],
+      "properties": {
+        "sourceType": {"enum": ["patient", "document", "fhir", "clinician", "system"]},
+        "sourceId": {"type": "string"},
+        "sourceTitle": {"type": "string"},
+        "facility": {"type": "string"},
+        "eventDate": {"type": "string", "format": "date-time"},
+        "ingestedAt": {"type": "string", "format": "date-time"},
+        "locator": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}
