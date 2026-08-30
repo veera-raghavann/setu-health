@@ -64,11 +64,11 @@ tests/          Cross-service and integration tests
 
 ## Current engineering focus: PRISM
 
-PRISM is the first production workstream. Its boundaries are deliberately defined so that OCR, Indian-language ASR, and the patient client can be developed independently and then converge on one clinical evidence contract.
+PRISM is the first production workstream. Its boundaries are deliberately defined so that OCR, Indian-language ASR, and the patient client can be developed independently and then converge on one shared clinical evidence contract.
 
-### PRISM contract
+### PRISM shared contract
 
-The initial shared concepts are:
+The shared contract covers the concepts required to move evidence through the PRISM pipeline:
 
 - `Patient`
 - `Session`
@@ -82,6 +82,28 @@ The initial shared concepts are:
 - `HistorySection`
 - `SafetyFlag`
 - `Evidence`
+
+The contract is an **engineering interface**, not a separate project or branch. All PRISM contributors build against the same interface.
+
+## Team Git workflow
+
+Keep the workflow simple:
+
+```text
+PRISM-001 branch
+      ↓
+team members work on the task
+      ↓
+integration + testing
+      ↓
+pull request → main
+      ↓
+review + merge
+      ↓
+delete PRISM-001 branch
+```
+
+Use **one branch per PRISM issue**. Do not create extra branch layers such as `foundation/...`, `contract/...`, or `v0/...` unless the team later has a concrete reason to do so.
 
 ## Engineering principles
 
