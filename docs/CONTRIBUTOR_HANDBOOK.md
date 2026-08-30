@@ -57,7 +57,7 @@ Every feature should answer four questions:
 
 1. Where does this fit in the SETU patient journey?
 2. What data does it receive?
-3. What agreed data shape does it produce?
+3. What data shape does it produce, and where will that shape be defined?
 4. Which downstream module consumes that output?
 
 Do not build an isolated demo that cannot connect to the shared system.
@@ -138,7 +138,7 @@ MedBridge is the clinical reconciliation/intelligence layer.
 
 It consumes evidence produced or retrieved elsewhere and performs cross-source reconciliation, conflict/gap detection, evidence-grounded summarisation and clinical-query support.
 
-Do not make PRISM depend directly on MedBridge internals. Connect them through shared contracts/interfaces.
+Do not make PRISM depend directly on MedBridge internals. Connect them through shared contracts/interfaces once those interfaces are defined.
 
 #### `services/abdm/`
 
@@ -154,9 +154,9 @@ This layer isolates external ecosystem details from the rest of the application.
 
 This is one of the most important folders in the repository.
 
-It contains the shared clinical data contracts used between PRISM modules and later MedBridge integration.
+It is reserved for the shared clinical data structures/contracts used between PRISM modules and later MedBridge integration. **PRISM-001 is the work item that will define the first agreed version of this shared interface; it is not treated as an already-finished contract.**
 
-The contract exists so that:
+The intended contract will allow:
 
 ```text
 ASR ──────┐
@@ -166,11 +166,11 @@ History ──┤
 AYUSH ────┘
 ```
 
-All contributors must use the shared contract instead of inventing incompatible JSON shapes for their own module.
+Until PRISM-001 is defined and reviewed, contributors should not invent competing shared JSON structures. Research and module-specific work can proceed, but integration shapes should be discussed through the PRISM-001 work item.
 
 ### Evidence must retain provenance
 
-A clinically relevant item should preserve, where applicable:
+The shared model should preserve, where applicable:
 
 - original value
 - structured/normalized value
@@ -259,7 +259,7 @@ Module-specific unit tests should stay close to their module where the chosen fr
 
 We especially need tests for:
 
-- shared schema validation
+- shared data-structure validation
 - ASR/OCR output mapping
 - clinical-history assembly
 - AYUSH pathway routing
@@ -462,7 +462,7 @@ Before pushing, make sure:
 - no patient/health data is present
 - no API keys or certificates are committed
 - no vendor credentials are hardcoded
-- the shared contract is respected
+- current agreed interfaces are respected; do not invent a parallel shared schema
 - documentation is updated if behaviour/architecture changed
 
 ---
@@ -516,7 +516,7 @@ Before approving a PR, check:
 - Does it respect both allopathic and AYUSH pathways where relevant?
 
 ### Technical
-- Does it use shared contracts?
+- Does it follow the current shared interfaces/data structures?
 - Are service boundaries respected?
 - Are external integrations isolated behind adapters?
 - Are errors handled?
@@ -562,7 +562,7 @@ shared clinical evidence
 
 Benchmark realistic inputs: printed reports, prescriptions, handwritten material, multilingual documents, poor scans and photographs.
 
-The output of your work must be usable by `services/prism/ocr/` and compatible with the shared clinical evidence contract.
+The output of your work must be usable by `services/prism/ocr/` and compatible with the PRISM-001 shared interface once it is defined and reviewed.
 
 ## ASR / Bhashini track
 
@@ -602,7 +602,7 @@ Consider:
 - Android/iOS requirements
 - integration with PRISM services
 
-The final client must consume shared contracts rather than duplicate backend clinical logic.
+The final client must consume the agreed shared interfaces rather than duplicate backend clinical logic.
 
 ---
 
@@ -739,7 +739,7 @@ Follow this order:
 1. Read the assigned issue.
 2. Search the repository for an existing implementation/pattern.
 3. Read the relevant architecture/clinical/research documentation.
-4. Check the shared clinical schema.
+4. Check `packages/clinical-schema/` and the current PRISM-001 status.
 5. Ask in the team discussion/issue before creating a parallel architecture.
 6. If the decision affects multiple modules, document it before implementing it.
 
@@ -755,7 +755,7 @@ A PRISM task is ready for PR when:
 
 - the issue's acceptance criteria are addressed
 - code is in the correct repository area
-- shared contracts are respected
+- current shared interfaces are respected
 - tests relevant to the change pass
 - no secrets or real health data are included
 - documentation/research is updated where needed
@@ -827,4 +827,4 @@ Some work can happen in parallel. The sequence above describes the integration d
 | Cross-module tests | `tests/` |
 | Deployment | `infrastructure/` |
 
-**Welcome to SETU. Build your piece, understand the whole bridge, and keep the contract intact.**
+**Welcome to SETU. Build your piece, understand the whole bridge, and keep the integration boundaries intact.**
