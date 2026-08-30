@@ -2,29 +2,158 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://setu-health.dev/schema/v0/clinical-evidence.json",
   "title": "SETU Clinical Evidence",
+  "description": "A provenance-preserving clinical fact exchanged between PRISM, document intelligence, interoperability adapters, and downstream clinical services.",
   "type": "object",
-  "required": ["id", "kind", "value", "provenance"],
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "kind",
+    "source",
+    "value",
+    "provenance"
+  ],
   "properties": {
-    "id": {"type": "string"},
-    "kind": {"type": "string"},
-    "value": {"type": ["string", "number", "boolean", "object", "array", "null"]},
-    "normalized": {"type": "object"},
-    "status": {"type": "string"},
-    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for this evidence item within its containing session or record."
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Machine-readable clinical concept or evidence kind, for example symptom, allergy, medication, diagnosis, lab_result, or ayush_prakriti."
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "patient",
+        "document",
+        "fhir",
+        "clinician",
+        "system"
+      ],
+      "description": "Origin of the asserted information."
+    },
+    "captureMethod": {
+      "type": "string",
+      "enum": [
+        "voice",
+        "touch",
+        "ocr",
+        "fhir",
+        "manual",
+        "derived"
+      ],
+      "description": "How SETU obtained the evidence."
+    },
+    "language": {
+      "type": "string",
+      "minLength": 2,
+      "description": "BCP 47 language tag for the original patient-facing content when known."
+    },
+    "originalValue": {
+      "description": "The value as captured from the source, before normalization."
+    },
+    "value": {
+      "description": "Structured or scalar representation used by downstream services."
+    },
+    "normalized": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "system": {
+          "type": "string",
+          "description": "Terminology/code system, such as SNOMED CT, LOINC, ICD-10, or a SETU internal vocabulary."
+        },
+        "code": {
+          "type": "string"
+        },
+        "display": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {},
+        "referenceRange": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "low": {},
+            "high": {},
+            "unit": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "historical",
+        "resolved",
+        "denied",
+        "unknown",
+        "entered_in_error"
+      ]
+    },
+    "certainty": {
+      "type": "string",
+      "enum": [
+        "stated",
+        "probable",
+        "possible",
+        "unknown"
+      ],
+      "description": "Semantic certainty of the claim; this is distinct from extraction confidence."
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "System confidence in capture or extraction. It must not be interpreted as clinical certainty."
+    },
     "provenance": {
       "type": "object",
-      "required": ["sourceType"],
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "ingestedAt"
+      ],
       "properties": {
-        "sourceType": {"enum": ["patient", "document", "fhir", "clinician", "system"]},
-        "sourceId": {"type": "string"},
-        "sourceTitle": {"type": "string"},
-        "facility": {"type": "string"},
-        "eventDate": {"type": "string", "format": "date-time"},
-        "ingestedAt": {"type": "string", "format": "date-time"},
-        "locator": {"type": "string"}
-      },
-      "additionalProperties": false
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceTitle": {
+          "type": "string"
+        },
+        "facility": {
+          "type": "string"
+        },
+        "eventDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ingestedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "locator": {
+          "type": "string",
+          "description": "Human- or machine-resolvable location within the source, such as page, section, FHIR resource id, or document region."
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Non-clinical implementation metadata. Do not place secrets or raw patient identifiers here."
     }
-  },
-  "additionalProperties": true
+  }
 }
