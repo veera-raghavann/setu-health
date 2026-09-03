@@ -1,0 +1,1 @@
+{"name":"@setu/prism-api","private":true,"version":"0.1.0","type":"module","scripts":{"dev":"tsx watch src/server.ts","start":"tsx src/server.ts","test":"tsx --test tests/*.test.ts"},"dependencies":{"@fastify/cors":"latest","fastify":"latest","tsx":"latest","typescript":"latest"},"devDependencies":{}}
