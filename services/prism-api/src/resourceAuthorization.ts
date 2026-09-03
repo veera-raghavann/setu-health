@@ -1,0 +1,2 @@
+import {activeGrantFor} from "./repositories/resourceAccessRepository.js";
+export async function authorizeMedBridgeResource(resourceId:string,context:{accessSessionId:string;patientId?:string}){const grant=await activeGrantFor(resourceId,context.accessSessionId);if(!grant)return{allowed:false,reason:"no_active_resource_grant"};if(context.patientId&&grant.patientId&&context.patientId!==grant.patientId)return{allowed:false,reason:"patient_mismatch"};return{allowed:true,grant}}

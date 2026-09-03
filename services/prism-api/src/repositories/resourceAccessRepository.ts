@@ -1,0 +1,6 @@
+import {randomUUID} from "crypto";
+export interface ResourceAccessGrant{ id:string; resourceId:string; patientId:string|null; audience:"patient"|"medbridge_clinician"; purpose:string; consentReference:string|null; accessSessionId:string|null; grantedAt:string; expiresAt:string|null; revokedAt:string|null; createdBy:string|null }
+const grants=new Map<string,ResourceAccessGrant>();
+export async function createGrant(input:Omit<ResourceAccessGrant,"id"|"grantedAt"|"revokedAt">){const grant={id:randomUUID(),grantedAt:new Date().toISOString(),revokedAt:null,...input};grants.set(grant.id,grant);return grant}
+export async function activeGrantFor(resourceId:string,sessionId:string){const now=Date.now();return [...grants.values()].find(g=>g.resourceId===resourceId&&g.audience==="medbridge_clinician"&&g.accessSessionId===sessionId&&!g.revokedAt&&(!g.expiresAt||new Date(g.expiresAt).getTime()>now))||null}
+export async function revokeGrant(id:string){const g=grants.get(id);if(!g)return null;g.revokedAt=new Date().toISOString();grants.set(id,g);return g}
