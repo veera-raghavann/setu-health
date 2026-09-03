@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "dev": "npm --workspace @setu/prism-api run dev",
-    "dev:web": "npm --workspace @setu/patient run dev -- --host 0.0.0.0",
+    "dev:web": "npm --workspace @setu/patient-web run dev -- --host 0.0.0.0",
     "build": "npm --workspace @setu/patient-web run build",
     "test": "npm --workspace @setu/prism-api test",
     "dev:api": "npm --workspace @setu/prism-api run dev",
