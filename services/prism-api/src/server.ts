@@ -1,8 +1,10 @@
-import Fastify from "fastify"; import cors from "@fastify/cors"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {ask,decide} from "./orchestrator.js"; import {draftSummary} from "./summary.js";
-const app=Fastify({logger:true}); await app.register(cors,{origin:true});
+import Fastify from "fastify"; import cors from "@fastify/cors"; import multipart from "@fastify/multipart"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {ask,decide} from "./orchestrator.js"; import {draftSummary} from "./summary.js"; import {registerUpload} from "./resourcePipeline.js"; import {getResource} from "./storage.js";
+const app=Fastify({logger:true}); await app.register(cors,{origin:true}); await app.register(multipart,{limits:{fileSize:25*1024*1024,files:1}});
 app.get("/health",async()=>({status:"ok",service:"prism-api",persistence:config.databaseUrl?"postgresql":"development-memory"}));
 app.post("/v1/intake/sessions",async(req:any)=>{const b=req.body||{};return createSession({language:b.language,entryPoint:b.entry_point,pathway:b.pathway,nextAction:ask("Please tell me, in your own words, what is troubling you today.")})});
 app.get("/v1/intake/sessions/:id",async(req:any,res)=>{const s=await getSession(req.params.id);return s||res.code(404).send({error:"session_not_found"})});
 app.post("/v1/intake/sessions/:id/responses",async(req:any,res)=>{const s=await getSession(req.params.id);if(!s)return res.code(404).send({error:"session_not_found"});const value=req.body?.value;if(!value)return res.code(400).send({error:"value_required"});decide(s,value,req.body?.input_mode||"text");return saveSession(s)});
 app.get("/v1/intake/sessions/:id/summary",async(req:any,res)=>{const s=await getSession(req.params.id);return s?draftSummary(s):res.code(404).send({error:"session_not_found"})});
+app.post("/v1/resources/upload",async(req:any,res)=>{const file=await req.file();if(!file)return res.code(400).send({error:"file_required"});const buffer=await file.toBuffer();const patientId=(req.query as any)?.patient_id||null;const resource=await registerUpload({filename:file.filename,mimetype:file.mimetype,buffer},patientId);return {resource,status:"registered",next:"processing_pending"}});
+app.get("/v1/resources/:id",async(req:any,res)=>{const resource=await getResource(req.params.id);return resource||res.code(404).send({error:"resource_not_found"})});
 await app.listen({port:config.port,host:"0.0.0.0"});
