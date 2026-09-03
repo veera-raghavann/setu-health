@@ -73,6 +73,21 @@ PRISM / Unified Patient Context
 | PDF | Supported, up to 20 pages in current MVP |
 | HEIC | Planned |
 
+## Evidence classification
+
+Every material extracted entity is tagged with:
+
+- clinical pathway: `allopathic`, `ayush`, `cross_cutting` or `unknown`
+- source class: patient-reported, patient-provided document, ABDM exchange, clinician-confirmed or system-derived
+- verification state: what was actually verified, without turning extraction into clinical truth
+- resource origin: document ID, page and region/bounding box when available
+
+OCR outputs from patient-held documents are classified as `patient_provided_document` with verification state `extracted_from_document`.
+
+ABDM/FHIR records are not processed by this service. They must enter through the ABDM adapter as `abdm_exchange`. Exchange provenance is not equivalent to clinician confirmation.
+
+AYUSH and allopathic context are preserved separately; AYUSH keyword inference in the current baseline is conservative and requires domain validation before production use.
+
 ## Current document classes
 
 - Prescription
