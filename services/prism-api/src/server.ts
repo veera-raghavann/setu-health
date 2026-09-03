@@ -1,7 +1,8 @@
-import Fastify from "fastify"; import cors from "@fastify/cors"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {ask,decide} from "./orchestrator.js";
+import Fastify from "fastify"; import cors from "@fastify/cors"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {ask,decide} from "./orchestrator.js"; import {draftSummary} from "./summary.js";
 const app=Fastify({logger:true}); await app.register(cors,{origin:true});
 app.get("/health",async()=>({status:"ok",service:"prism-api",persistence:config.databaseUrl?"postgresql":"development-memory"}));
 app.post("/v1/intake/sessions",async(req:any)=>{const b=req.body||{};return createSession({language:b.language,entryPoint:b.entry_point,pathway:b.pathway,nextAction:ask("Please tell me, in your own words, what is troubling you today.")})});
 app.get("/v1/intake/sessions/:id",async(req:any,res)=>{const s=await getSession(req.params.id);return s||res.code(404).send({error:"session_not_found"})});
 app.post("/v1/intake/sessions/:id/responses",async(req:any,res)=>{const s=await getSession(req.params.id);if(!s)return res.code(404).send({error:"session_not_found"});const value=req.body?.value;if(!value)return res.code(400).send({error:"value_required"});decide(s,value,req.body?.input_mode||"text");return saveSession(s)});
+app.get("/v1/intake/sessions/:id/summary",async(req:any,res)=>{const s=await getSession(req.params.id);return s?draftSummary(s):res.code(404).send({error:"session_not_found"})});
 await app.listen({port:config.port,host:"0.0.0.0"});
