@@ -1,0 +1,4 @@
+export type ClinicalCategory="allergy"|"medication"|"diagnosis"|"lab_result"|"vital"|"immunization"|"discharge_summary"|"procedure"|"clinical_note"|"unknown";
+export type SourceClass="patient_reported"|"uploaded_document"|"abdm_exchange"|"clinician_confirmed";
+export interface SourcePointer{resourceId:string;originalResourceId?:string;page?:number;region?:number[];sourceText?:string;confidence?:number}
+export interface ClinicalEvidence<T=Record<string,unknown>>{id:string;patientId:string|null;category:ClinicalCategory;data:T;source:SourceClass;verificationStatus:"unverified"|"source_extracted"|"patient_confirmed"|"clinician_confirmed";carePathway:"allopathy"|"ayush"|"mixed"|"unknown";occurredAt?:string;recordedAt:string;sourcePointers:SourcePointer[];fhir?:{resourceType:string;resourceId?:string;version:"R4";projectionStatus:"pending"|"projected"|"review_required"}}
