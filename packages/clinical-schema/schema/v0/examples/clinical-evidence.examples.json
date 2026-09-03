@@ -2,7 +2,9 @@
   {
     "id": "ev-001",
     "kind": "symptom",
+    "clinicalPathway": "allopathic",
     "source": "patient",
+    "sourceClass": "patient_reported",
     "captureMethod": "voice",
     "language": "ta-IN",
     "originalValue": "எனக்கு மூன்று நாட்களாக மார்பு வலி இருக்கிறது",
@@ -15,6 +17,16 @@
     "status": "active",
     "certainty": "stated",
     "confidence": 0.94,
+    "resourceRefs": [
+      {
+        "resourceType": "conversation_turn",
+        "resourceId": "intake-session-001-turn-07",
+        "reference": "ConversationTurn/intake-session-001/turn-07"
+      }
+    ],
+    "verification": {
+      "state": "patient_reported"
+    },
     "provenance": {
       "sourceId": "intake-session-001",
       "sourceTitle": "Patient intake conversation",
@@ -26,7 +38,9 @@
   {
     "id": "ev-002",
     "kind": "allergy",
+    "clinicalPathway": "cross_cutting",
     "source": "document",
+    "sourceClass": "patient_provided_document",
     "captureMethod": "ocr",
     "language": "en-IN",
     "originalValue": "Allergy: Penicillin",
@@ -38,6 +52,19 @@
     "status": "active",
     "certainty": "stated",
     "confidence": 0.88,
+    "resourceRefs": [
+      {
+        "resourceType": "document",
+        "resourceId": "document-042",
+        "reference": "Document/document-042",
+        "page": 2,
+        "section": "allergies",
+        "locator": "page-2/allergies"
+      }
+    ],
+    "verification": {
+      "state": "extracted_from_document"
+    },
     "provenance": {
       "sourceId": "document-042",
       "sourceTitle": "Discharge Summary",
@@ -50,7 +77,9 @@
   {
     "id": "ev-003",
     "kind": "lab_result",
+    "clinicalPathway": "allopathic",
     "source": "fhir",
+    "sourceClass": "abdm_exchange",
     "captureMethod": "fhir",
     "language": "en-IN",
     "originalValue": "HbA1c 8.2 %",
@@ -65,6 +94,17 @@
     "status": "active",
     "certainty": "stated",
     "confidence": 1,
+    "resourceRefs": [
+      {
+        "resourceType": "fhir_resource",
+        "resourceId": "observation-987",
+        "reference": "Observation/observation-987"
+      }
+    ],
+    "verification": {
+      "state": "abdm_exchange",
+      "note": "ABDM exchange provenance is not equivalent to current clinician confirmation."
+    },
     "provenance": {
       "sourceId": "observation-987",
       "sourceTitle": "FHIR Observation",
@@ -77,7 +117,9 @@
   {
     "id": "ev-004",
     "kind": "ayush_prakriti",
+    "clinicalPathway": "ayush",
     "source": "patient",
+    "sourceClass": "patient_reported",
     "captureMethod": "touch",
     "language": "en-IN",
     "originalValue": "Predominantly Vata",
@@ -85,6 +127,16 @@
     "status": "active",
     "certainty": "stated",
     "confidence": 0.91,
+    "resourceRefs": [
+      {
+        "resourceType": "touch_response",
+        "resourceId": "intake-session-001-prakriti",
+        "reference": "TouchResponse/intake-session-001/question-prakriti"
+      }
+    ],
+    "verification": {
+      "state": "patient_reported"
+    },
     "provenance": {
       "sourceId": "intake-session-001",
       "sourceTitle": "AYUSH intake",
