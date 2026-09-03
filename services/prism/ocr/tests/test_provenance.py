@@ -20,3 +20,5 @@ def test_ayush_document_pathway_is_preserved():
     result = ClinicalStructurer().structure("document-ayush", text, [])
     assert result.clinical_pathway == "ayush"
     assert result.source_class == "patient_provided_document"
+
+# PRISM-005 contract regression coverage.
