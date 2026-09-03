@@ -1,0 +1,2 @@
+import type {ClinicalEvidence} from "../../../../packages/clinical-schema/src/evidence.js"; import {toFhir} from "./projector.js";
+export function evidenceBundle(patientId:string,evidence:ClinicalEvidence[]){const entries=evidence.map(e=>toFhir(e)).filter(Boolean).map(resource=>({resource}));return{resourceType:"Bundle",type:"collection",timestamp:new Date().toISOString(),entry:entries,identifier:{system:"https://setu.health/fhir/bundle",value:`prism-${patientId}-${Date.now()}`}}}
