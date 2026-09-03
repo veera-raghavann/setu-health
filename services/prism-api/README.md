@@ -1,10 +1,30 @@
 # PRISM API
 
-Initial backend spine for the patient intake product.
+## Current architecture
 
-Current endpoints:
-- POST /v1/intake/sessions
-- POST /v1/intake/sessions/:id/responses
-- GET /health
+- Fastify HTTP API
+- Intake session repository
+- PostgreSQL-ready persistence
+- Development in-memory fallback
+- Backend-owned clinical conversation state
+- Evidence model prepared for provenance and care-pathway classification
 
-The current store is in-memory for development only. The next persistence milestone moves session, patient, evidence and document metadata into PostgreSQL. Clinical protocols and red-flag rules remain deterministic and clinician-reviewed.
+## Run
+
+```bash
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Without DATABASE_URL the service runs with ephemeral development storage.
+
+## Database
+
+Apply:
+
+```bash
+psql "$DATABASE_URL" -f migrations/001_initial.sql
+```
+
+No clinical record should be treated as clinician-confirmed merely because it exists in the database.
