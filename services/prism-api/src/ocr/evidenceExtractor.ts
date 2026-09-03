@@ -1,0 +1,3 @@
+import type {EvidenceCandidate,OcrResult} from "./types.js";
+const labPatterns=[{kind:"lab_observation",re:/\b(HbA1c|Creatinine|Hemoglobin|Glucose|TSH)\s*[:=-]?\s*([0-9.]+)\s*([a-zA-Z/%µ]+)?/gi}];
+export function extractEvidence(result:OcrResult):EvidenceCandidate[]{const out:EvidenceCandidate[]=[];for(const page of result.pages){for(const p of labPatterns){for(const m of page.text.matchAll(p.re)){out.push({kind:p.kind,value:Number(m[2]),unit:m[3],carePathway:"unknown",page:page.page,sourceText:m[0],confidence:page.confidence})}}}return out}

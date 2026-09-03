@@ -1,0 +1,2 @@
+import type {OcrAdapter} from "./ocrAdapter.js"; import {extractEvidence} from "./evidenceExtractor.js";
+export async function processResource(adapter:OcrAdapter,input:{resourceId:string;mediaType:string;bytes?:Buffer}){const ocr=await adapter.extract(input);if(ocr.status!=="completed")return{ocr,evidence:[],status:"failed"};const evidence=extractEvidence(ocr);return{ocr,evidence,status:"completed"}}
