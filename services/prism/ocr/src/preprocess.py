@@ -8,6 +8,9 @@ class OpenCVPreprocessor:
         image = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
         if image is None:
             raise ValueError("Unable to decode uploaded image.")
+        return self.run_image(image)
+
+    def run_image(self, image: np.ndarray) -> np.ndarray:
         image = self._resize(image)
         image = self._deskew(image)
         return self._enhance(image)
