@@ -15,7 +15,7 @@ logger = logging.getLogger("prism.ocr")
 
 app = FastAPI(
     title="PRISM Medical Document Intelligence",
-    version="0.2.0",
+    version="0.3.0",
     description="Evidence-preserving medical document ingestion and clinical structuring service.",
 )
 app.add_middleware(
@@ -43,7 +43,7 @@ async def process_document(file: UploadFile = File(...)) -> dict:
     document = ingest(file.filename or "uploaded-document", file.content_type, payload)
     logger.info("document_received id=%s bytes=%s", document.document_id, len(payload))
     try:
-        result = pipeline.process(document.document_id, document.content)
+        result = pipeline.process(document.document_id, document.content, document.media_type)
         result["metadata"]["filename"] = document.filename
         result["metadata"]["media_type"] = document.media_type
         return result
