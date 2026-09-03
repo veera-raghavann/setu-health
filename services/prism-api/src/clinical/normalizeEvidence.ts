@@ -1,0 +1,5 @@
+import {randomUUID} from "crypto"; import type {ClinicalEvidence} from "../../../../packages/clinical-schema/src/evidence.js"; import type {EvidenceCandidate} from "../ocr/types.js";
+export function normalizeCandidate(candidate:EvidenceCandidate,input:{patientId:string|null;resourceId:string;originalResourceId?:string}):ClinicalEvidence{
+ const category=candidate.kind==="unknown"?"unknown":candidate.kind;
+ const data={value:candidate.value,unit:candidate.unit,raw:candidate.sourceText};
+ return{id:randomUUID(),patientId:input.patientId,category,data,source:"uploaded_document",verificationStatus:"source_extracted",carePathway:candidate.carePathway,recordedAt:new Date().toISOString(),sourcePointers:[{resourceId:input.resourceId,originalResourceId:input.originalResourceId,page:candidate.page,sourceText:candidate.sourceText,confidence:candidate.confidence}],fhir:{resourceType:category==="lab_result"||category==="vital"?"Observation":category==="medication"?"MedicationStatement":category==="diagnosis"?"Condition":"DocumentReference",version:"R4",projectionStatus:"pending"}}}
