@@ -1,0 +1,2 @@
+export interface AsrResult{text:string;language:string;confidence:number;provider:string;raw?:unknown}
+export interface AsrAdapter{transcribe(input:{audio:Buffer;mediaType:string;languageHint?:string}):Promise<AsrResult>}
