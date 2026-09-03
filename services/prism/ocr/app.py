@@ -1,5 +1,5 @@
 import logging
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -38,12 +38,12 @@ def health() -> dict:
     return {"status": "ok", "service": "prism-ocr", "version": app.version}
 
 @app.post("/v1/documents/process")
-async def process_document(file: UploadFile = File(...)) -> dict:
+async def process_document(file: UploadFile = File(...), language_hint: str | None = Form(None)) -> dict:
     payload = await file.read()
     document = ingest(file.filename or "uploaded-document", file.content_type, payload)
     logger.info("document_received id=%s bytes=%s", document.document_id, len(payload))
     try:
-        result = pipeline.process(document.document_id, document.content, document.media_type)
+        result = pipeline.process(document.document_id, document.content, document.media_type, language_hint)
         result["metadata"]["filename"] = document.filename
         result["metadata"]["media_type"] = document.media_type
         return result
