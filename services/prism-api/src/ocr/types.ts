@@ -1,0 +1,3 @@
+export interface OcrPage{page:number;text:string;confidence?:number;blocks?:Array<{text:string;confidence?:number;boundingBox?:number[]}>}
+export interface OcrResult{engine:string;engineVersion?:string;languageHints:string[];pages:OcrPage[];status:"completed"|"failed";error?:string}
+export interface EvidenceCandidate{kind:string;value:string|number|boolean|null;unit?:string;observedAt?:string;carePathway:"allopathy"|"ayush"|"mixed"|"unknown";page:number;sourceText:string;confidence?:number}
