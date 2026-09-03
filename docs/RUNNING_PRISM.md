@@ -5,55 +5,54 @@
 ```text
 PostgreSQL
     +
-PRISM OCR Worker
+PRISM OCR Worker (OpenCV + PaddleOCR)
     +
 PRISM API
 ```
 
-The patient web app can then be run separately with Vite.
+## Prerequisites
 
-## 1. Configure optional voice integration
+- Docker Desktop running
+- Node.js 22 recommended for the web app
 
-Copy the API environment example and add BHASHINI server credentials only to the server environment.
-
-Do not place provider secrets in frontend `VITE_*` variables for production.
-
-## 2. Start backend services
+## Start backend stack
 
 ```bash
 docker compose up --build
 ```
 
-Check:
+The first OCR build downloads Python/Paddle dependencies and may take several minutes.
 
-- API: `http://localhost:8000/health`
-- OCR worker: `http://localhost:8100/health`
+If you previously built an older OCR image and see a native-library error such as `libGL.so.1`, pull the latest PRISM branch and rebuild the OCR service without cache:
 
-## 3. Start patient web
+```bash
+git pull origin PRISM-001
+docker compose build --no-cache prism-ocr
+docker compose up
+```
+
+## Start patient web
+
+In another terminal:
 
 ```bash
 npm install
 npm run dev:web
 ```
 
-Set:
+Create `apps/patient/.env.local`:
 
 ```text
 VITE_PRISM_API_URL=http://localhost:8000
 ```
 
-## End-to-end smoke test
+Open the Vite URL, normally `http://localhost:5173`.
 
-1. Start a current-health-issue intake.
-2. Complete text or touch questions.
-3. Test Tamil and Hindi language selection.
-4. Upload an image or PDF.
-5. Confirm the original file appears under Records.
-6. Open the source file from the record list.
-7. Confirm OCR evidence through `/v1/patients/:patientId/evidence`.
-8. Confirm the FHIR projection through `/v1/patients/:patientId/fhir-bundle`.
-9. Test voice only when BHASHINI runtime credentials and approved endpoint configuration are available.
+## Health checks
 
-## Production note
+- API: `http://localhost:8000/health`
+- OCR: `http://localhost:8100/health`
 
-The compose file is a local integration environment, not a claim of production deployment. Production requires managed database/storage, secret management, TLS, identity and consent enforcement, and approved ABDM/BHASHINI integration credentials.
+## Production boundary
+
+Docker Compose is our local integration environment. Production deployment still requires managed persistence, object storage, secret management, TLS, identity/consent enforcement, and approved external integrations.
