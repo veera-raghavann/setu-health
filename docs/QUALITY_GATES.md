@@ -1,48 +1,48 @@
 # PRISM Quality Gates
 
-Before merging PRISM-001 to main, verify:
+Before PRISM-001 merges to main:
 
-## Build
+## Multilingual
 
-- patient app TypeScript build passes
-- API TypeScript build passes
+- English, Tamil and Hindi typed intake
+- English, Tamil and Hindi voice path
+- localized next questions and touch labels
+- emergency phrases in all supported languages
+- record-upload and ABHA intents in all supported languages
+- OCR language hint propagation
 
 ## Voice
 
 - microphone permission
 - BHASHINI connection
-- interim transcript
-- final transcript
-- Tamil test
-- Hindi test
-- English test
-- graceful missing-key error
+- interim and final transcripts
+- missing-key handling
+- same-language response path
+
+## OCR
+
+- original file retained
+- source resource ID persists
+- evidence points to page and bounding box
+- low-quality review flag
+- multilingual OCR validation
+- AYUSH/Allopathy classification remains separate
 
 ## Conversation
 
-- free-text chief complaint
-- touch answer
-- voice answer
-- record-upload intent
-- ABHA intent
-- emergency red-flag path
-- no duplicate first-answer assignment
+- free text, touch and voice enter same engine
+- first answer is not duplicated
+- navigation intents trigger UI
+- deterministic safety remains authoritative
+- every major decision has a trace
 
-## Evidence
+## Engineering
 
-- original file retained
-- resource identifier persists
-- extracted evidence links origin
-- patient-reported vs extracted distinction visible
-- AYUSH/Allopathy classification preserved
-
-## Security
-
+- patient app build
+- API typecheck
+- API tests
+- OCR tests
 - no secrets committed
-- no production long-lived provider key exposed
-- consent boundary documented
+- no long-lived production provider key exposed
 
-## Interoperability
-
-- FHIR mapping remains provenance-aware
-- ABHA/ABDM adapter remains isolated from core logic
+Passing a checklist item means it has been executed against the running stack, not merely implemented in code.
