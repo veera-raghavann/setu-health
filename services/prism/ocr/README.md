@@ -1,125 +1,209 @@
 # PRISM-003 — Medical Document Intelligence
 
-PRISM OCR is not a document scanner. It is the medical-document evidence pipeline for SETU.
+PRISM-003 is the document-evidence service for SETU. It converts patient-held medical documents into structured, reviewable clinical evidence.
 
-## Pipeline
+It is intentionally **not** an autonomous diagnostic system.
+
+## Production architecture
 
 ```text
-Patient document
-      ↓
+JPEG / PNG / WEBP / PDF
+          │
+          ▼
+Secure ingestion
+- file type validation
+- size limits
+- content verification
+          │
+          ▼
+Document decoding
+- image decoding
+- multi-page PDF rendering
+          │
+          ▼
 OpenCV preprocessing
-      ↓
-PaddleOCR text + layout extraction
-      ↓
-Document classification
-      ↓
-Clinical structuring layer
-      ↓
-Evidence-linked structured output
-      ↓
-PRISM unified clinical context
+- resize
+- deskew
+- contrast enhancement
+          │
+          ├──────────────► image quality assessment
+          │
+          ▼
+PaddleOCR
+- text extraction
+- confidence
+- bounding boxes
+- page provenance
+          │
+          ▼
+Clinical structuring
+- document classification
+- medication extraction
+- laboratory extraction
+- date extraction
+          │
+          ▼
+LLM adapter boundary
+(schema-constrained provider integration later)
+          │
+          ▼
+Evidence-linked JSON contract
+          │
+          ▼
+PRISM / Unified Patient Context
 ```
 
-## MVP stack
+## Core design rules
 
-| Layer | Technology |
+1. **Evidence before inference.** Extracted claims must remain traceable to document text.
+2. **No autonomous diagnosis.** The service structures evidence; clinicians remain decision-makers.
+3. **Uncertainty is preserved.** Low-confidence OCR and poor image quality trigger review.
+4. **Original records are not silently altered.**
+5. **No PHI is intentionally written to application logs.** Logs use document IDs and operational metadata.
+6. **Provider neutrality.** LLM integration sits behind an adapter boundary.
+7. **Interoperability first.** Output is designed to become part of SETU's shared clinical context and later FHIR mapping.
+
+## Supported inputs
+
+| Format | Status |
 |---|---|
-| Image preprocessing | OpenCV |
-| OCR | PaddleOCR |
-| API | FastAPI |
-| Clinical structuring | Deterministic baseline → LLM adapter |
-| Output | Pydantic JSON contract |
+| JPEG | Supported |
+| PNG | Supported |
+| WEBP | Supported |
+| PDF | Supported, up to 20 pages in current MVP |
+| HEIC | Planned |
 
-## What the service preserves
+## Current document classes
 
-Every output must preserve:
+- Prescription
+- Laboratory report
+- Discharge summary
+- OPD record
+- Diagnostic report
+- Radiology report
+- Surgical record
+- Referral letter
+- Unknown
 
-- source document identifier
+## API
+
+### Health
+
+```text
+GET /health
+```
+
+### Process document
+
+```text
+POST /v1/documents/process
+Content-Type: multipart/form-data
+file=<document>
+```
+
+The response includes:
+
+- document ID
+- document classification
+- raw OCR text
+- medications
+- lab observations
+- dates
+- source evidence
 - page provenance
 - OCR confidence
-- bounding-box evidence when available
-- extracted raw text
-- structured clinical entities
-- event date versus ingestion date when known
-- uncertainty requiring human review
+- bounding boxes
+- image quality signals
+- review-required state
 
-Low-confidence handwriting, ambiguous units, and uncertain medication names must remain reviewable by a human. OCR output is never treated as autonomous clinical truth.
-
-## Supported document classes
-
-Current target classes:
-
-1. Prescriptions
-2. Laboratory reports
-3. Discharge summaries
-4. OPD records
-5. Diagnostic reports
-6. Radiology reports
-7. Surgical records
-8. Referral letters
-
-## Current implementation
-
-The first runnable MVP now contains:
-
-- OpenCV resize, deskew and contrast enhancement
-- PaddleOCR extraction with confidence and bounding boxes
-- Evidence preservation
-- Initial document classification
-- Baseline medication, lab and date extraction
-- FastAPI processing endpoint
-- Tests for core structuring behaviour
-
-## Run locally
+## Local development
 
 ```bash
 cd services/prism/ocr
+cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app:app --reload
 ```
 
-Then upload an image:
+Open API documentation:
 
 ```text
-POST /v1/documents/process
-multipart/form-data
-file=<medical-document-image>
+http://localhost:8000/docs
 ```
 
-## LLM direction
+Run tests:
 
-The LLM is deliberately an adapter boundary rather than a free-form postprocessor.
+```bash
+pytest -q
+```
 
-The production structuring layer must eventually:
+## Docker
 
-- receive OCR text and evidence
-- classify document type
-- extract diagnoses, medications, investigations and procedures
-- return schema-constrained JSON
-- link each extracted claim to source evidence
-- preserve uncertainty
-- never silently invent missing clinical facts
+```bash
+docker compose up --build
+```
 
-The current deterministic structurer is the safe baseline while the LLM provider and structured-output contract are finalized.
+The service listens on port 8080 inside the container.
 
-## Integration position
+## LLM integration contract
+
+The LLM layer is not allowed to become a free-form summarizer.
+
+Before enabling a provider, it must satisfy:
+
+- schema-constrained JSON output
+- explicit document ID
+- evidence references for extracted claims
+- no unsupported clinical invention
+- confidence / uncertainty handling
+- deterministic validation after generation
+- provider and prompt version tracking
+
+The provider-neutral interface currently lives in:
 
 ```text
-Conversation history
+src/llm_adapter.py
+```
+
+## Before production deployment
+
+The codebase now has a production-oriented service foundation, but real healthcare deployment still requires:
+
+- approved clinical validation datasets
+- handwritten Indian prescription benchmarking
+- multilingual OCR evaluation
+- load and concurrency testing
+- malware/content scanning at the upload boundary
+- authenticated service-to-service access
+- secrets management
+- encrypted object storage if originals must be retained
+- retention and deletion policy
+- DPDP / institutional security review
+- observability and alerting
+- approved LLM provider with clinical safety evaluation
+- terminology normalization and FHIR mapping
+
+These are deployment gates, not features to silently assume complete.
+
+## Position inside SETU
+
+```text
+Patient voice history
         +
-Voice transcript
+Touch answers
         +
-OCR document evidence
+Medical document evidence  ◄── PRISM-003
         +
-ABDM / ABHA records
-        ↓
+ABDM / ABHA consented records
+        │
+        ▼
 Unified Patient Context
-        ↓
+        ▼
 Clinical History Engine
-        ↓
-Physician-ready summary
+        ▼
+Physician-ready clinical view
 ```
 
-PRISM-003 therefore owns **medical document evidence ingestion**, not final diagnosis or autonomous clinical decision-making.
+PRISM-003 owns the transformation of **unstructured patient documents into evidence-linked clinical context**.
