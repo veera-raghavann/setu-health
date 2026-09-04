@@ -20,7 +20,7 @@ test("groq adapter returns transcribed text on success",async()=>{
  try{
   const r=await new GroqAsrAdapter().transcribe({buffer:Buffer.from("x"),mimeType:"audio/webm",filename:"speech.webm"});
   assert.equal(r.text,"I have a fever");
-  assert.equal(r.engine,"groq-whisper-large-v3-turbo");
+  assert.equal(r.engine,"groq-whisper-large-v3");
  }finally{(global as any).fetch=originalFetch;delete process.env.GROQ_API_KEY}
 });
 

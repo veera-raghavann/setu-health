@@ -15,9 +15,10 @@ Clinician (MedBridge)  ←  consented context + conflict detection  ┘
 - **PRISM** (`apps/patient` + `services/prism-api`): a guided condition
   picker (fever, stomach pain, cough/cold, headache, body ache/injury, skin
   issue, or free text) drives a condition-specific question flow, live-
-  translated into the patient's chosen language (10 Indian languages) with a
-  🔊 speak-question button and voice input. Mid-conversation document upload
-  runs real OCR and structured clinical evidence extraction (labs, vitals,
+  translated into the patient's chosen language (English, Hindi, Tamil for
+  now) with a 🔊 speak-question button and Whisper-transcribed voice input.
+  Mid-conversation document upload runs real OCR and structured clinical
+  evidence extraction (labs, vitals,
   medications), each with a page-level citation back to the source document.
 - **Document approval**: extracted evidence starts as unverified OCR output.
   The patient reviews and approves it ("This looks right" / flag it wrong),
@@ -96,7 +97,7 @@ Stop everything with `Ctrl+C` once (it kills all four).
    you'll use it on the MedBridge side.
 3. You'll see a **condition card grid** (Fever, Stomach pain, Cough & cold,
    Headache, Body ache/injury, Skin issue, Something else). Switch the
-   language dropdown to Hindi (or any of the 9 Indian languages) — the cards
+   language dropdown to Hindi or Tamil — the cards
    and every question translate live. Tap 🔊 to hear the current question
    read aloud.
 4. Pick a condition (e.g. **Fever**) and answer its condition-specific
