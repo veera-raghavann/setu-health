@@ -1,6 +1,7 @@
 import type {IntakeSession} from "./types.js"; import {screenRedFlags} from "./safety.js"; import {detectPathway,questionsFor,recordAnswer} from "./protocolEngine.js";
-export const ask=(patient_text:string,options:any[]=[])=>( {type:"ASK",patient_text,input_mode:"BOTH",options} );
+export const ask=(patient_text:string,options:any[]=[],key?:string)=>( {type:"ASK",patient_text,input_mode:"BOTH",options,key} );
 export function decide(s:IntakeSession,value:string,inputMode:string){const ctx:any=s.clinicalContext;ctx.turns=[...(ctx.turns||[]),{role:"patient",value,inputMode,at:new Date().toISOString()}];
- if(!ctx.chief_complaint){ctx.chief_complaint=value;ctx.pathway=detectPathway(value);const flag=screenRedFlags(value);ctx.safety_flag=flag;if(flag.level==="emergency"){s.state="triage_required";s.nextAction={type:"TRIAGE_ALERT",patient_text:"Some symptoms you described may need urgent professional attention. Please seek immediate medical help or alert nearby staff.",input_mode:"NONE",options:[]};return s}}
- const next=questionsFor(s)[0];if(next){recordAnswer(s,next.key,value,inputMode);const following=questionsFor(s)[0];if(following){s.nextAction=ask(following.text,following.options||[]);return s}}
+ if(!ctx.chief_complaint){ctx.chief_complaint=value;ctx.pathway=detectPathway(value);const flag=screenRedFlags(value);ctx.safety_flag=flag;if(flag.level==="emergency"){s.state="triage_required";s.nextAction={type:"TRIAGE_ALERT",patient_text:"Some symptoms you described may need urgent professional attention. Please seek immediate medical help or alert nearby staff.",input_mode:"NONE",options:[]};return s}const first=questionsFor(s)[0];if(first){s.nextAction=ask(first.text,first.options||[],first.key);return s}}
+ const currentKey=(s.nextAction as any)?.key; if(currentKey)recordAnswer(s,currentKey,value,inputMode);
+ const following=questionsFor(s)[0];if(following){s.nextAction=ask(following.text,following.options||[],following.key);return s}
  s.state="review";s.nextAction={type:"COMPLETE_SECTION",patient_text:"Thank you. Your pre-consultation history is ready for your review.",input_mode:"NONE",options:[]};return s}
