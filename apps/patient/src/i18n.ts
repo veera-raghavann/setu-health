@@ -12,7 +12,7 @@
  */
 export const strings:Record<string,Record<string,string>>={
  "en-IN":{
-  nav_home:"Home",nav_my_health:"My Health",nav_records:"Records",nav_abha:"ABHA",nav_disconnect:"Disconnect",
+  nav_home:"Home",nav_my_health:"My Health",nav_records:"Records",nav_abha:"ABHA",nav_ayush:"AYUSH",nav_disconnect:"Disconnect",
   safety_line:"PRISM supports structured intake and information continuity. It does not diagnose or replace emergency care.",
   speak:"🎙 Speak",stop_recording:"⏹ Stop recording",transcribing:"Transcribing…",speak_question:"🔊 Speak question",upload_instead:"📎 Upload a photo instead",
   continue_btn:"Continue →",working:"Working…",finish_save:"Finish & save →",saving:"Saving…",
@@ -23,7 +23,7 @@ export const strings:Record<string,Record<string,string>>={
   looks_right:"✓ This looks right",flag_wrong:"✕ This is wrong, remove it",
  },
  "hi-IN":{
-  nav_home:"होम",nav_my_health:"मेरा स्वास्थ्य",nav_records:"रिकॉर्ड",nav_abha:"ABHA",nav_disconnect:"डिस्कनेक्ट करें",
+  nav_home:"होम",nav_my_health:"मेरा स्वास्थ्य",nav_records:"रिकॉर्ड",nav_abha:"ABHA",nav_ayush:"आयुष",nav_disconnect:"डिस्कनेक्ट करें",
   safety_line:"PRISM संरचित जानकारी एकत्र करता है। यह निदान नहीं करता और आपातकालीन देखभाल का विकल्प नहीं है।",
   speak:"🎙 बोलें",stop_recording:"⏹ रिकॉर्डिंग बंद करें",transcribing:"ट्रांसक्राइब हो रहा है…",speak_question:"🔊 प्रश्न सुनें",upload_instead:"📎 इसके बजाय फोटो अपलोड करें",
   continue_btn:"जारी रखें →",working:"कार्य जारी है…",finish_save:"पूरा करें और सहेजें →",saving:"सहेजा जा रहा है…",
@@ -34,7 +34,7 @@ export const strings:Record<string,Record<string,string>>={
   looks_right:"✓ यह सही है",flag_wrong:"✕ यह गलत है, हटाएं",
  },
  "ta-IN":{
-  nav_home:"முகப்பு",nav_my_health:"எனது ஆரோக்கியம்",nav_records:"பதிவுகள்",nav_abha:"ABHA",nav_disconnect:"துண்டி",
+  nav_home:"முகப்பு",nav_my_health:"எனது ஆரோக்கியம்",nav_records:"பதிவுகள்",nav_abha:"ABHA",nav_ayush:"ஆயுஷ்",nav_disconnect:"துண்டி",
   safety_line:"PRISM கட்டமைக்கப்பட்ட தகவல் சேகரிப்பை ஆதரிக்கிறது. இது நோயறிதல் செய்யாது, அவசர சிகிச்சைக்கு மாற்றாகாது.",
   speak:"🎙 பேசுங்கள்",stop_recording:"⏹ பதிவை நிறுத்தவும்",transcribing:"எழுத்தாக்கம் செய்யப்படுகிறது…",speak_question:"🔊 கேள்வியைக் கேளுங்கள்",upload_instead:"📎 பதிலாக புகைப்படத்தை பதிவேற்றவும்",
   continue_btn:"தொடரவும் →",working:"செயலாக்கத்தில்…",finish_save:"முடித்து சேமிக்கவும் →",saving:"சேமிக்கப்படுகிறது…",

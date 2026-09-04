@@ -1,4 +1,4 @@
-import "dotenv/config"; import Fastify from "fastify"; import cors from "@fastify/cors"; import multipart from "@fastify/multipart"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {decide,selectCondition} from "./orchestrator.js"; import {conditions} from "./protocolEngine.js"; import {draftSummary} from "./summary.js"; import {registerUpload} from "./resourcePipeline.js"; import {getResource} from "./storage.js"; import {getBinary} from "./binaryStore.js"; import {createGrant,revokeGrant} from "./repositories/resourceAccessRepository.js"; import {resolveForClinician} from "./medbridgeBridge.js"; import {HttpOcrWorkerAdapter} from "./ocr/ocrWorkerAdapter.js"; import {processResource} from "./ocr/processingPipeline.js"; import {normalizeCandidate} from "./clinical/normalizeEvidence.js"; import {saveEvidence,listEvidence,getEvidence,updateVerificationStatus} from "./repositories/evidenceRepository.js"; import {evidenceBundle} from "./fhir/bundle.js"; import {requestOtp,verifyOtp,getPatient,updatePatient,addIssue,addRecord} from "./repositories/patientPoolRepository.js"; import {requestMedBridgeConsent,verifyMedBridgeConsent,getMedBridgeContext,reconcileMedBridgeSession,getContextByHealthId} from "./repositories/medbridgeRepository.js"; import {getTranslationAdapter,translateAction,langCode} from "./translation/translationAdapter.js"; import {getAbdmAdapter} from "../../abdm/abdmAdapter.js"; import {getAsrAdapter} from "./asr/asrAdapter.js";
+import "dotenv/config"; import Fastify from "fastify"; import cors from "@fastify/cors"; import multipart from "@fastify/multipart"; import {config} from "./config.js"; import {createSession,getSession,saveSession} from "./repositories/intakeRepository.js"; import {decide,selectCondition} from "./orchestrator.js"; import {conditions} from "./protocolEngine.js"; import {draftSummary} from "./summary.js"; import {registerUpload} from "./resourcePipeline.js"; import {getResource} from "./storage.js"; import {getBinary} from "./binaryStore.js"; import {createGrant,revokeGrant} from "./repositories/resourceAccessRepository.js"; import {resolveForClinician} from "./medbridgeBridge.js"; import {HttpOcrWorkerAdapter} from "./ocr/ocrWorkerAdapter.js"; import {processResource} from "./ocr/processingPipeline.js"; import {normalizeCandidate} from "./clinical/normalizeEvidence.js"; import {saveEvidence,listEvidence,getEvidence,updateVerificationStatus} from "./repositories/evidenceRepository.js"; import {evidenceBundle} from "./fhir/bundle.js"; import {requestOtp,verifyOtp,getPatient,updatePatient,addIssue,addRecord} from "./repositories/patientPoolRepository.js"; import {requestMedBridgeConsent,verifyMedBridgeConsent,getMedBridgeContext,reconcileMedBridgeSession,getContextByHealthId} from "./repositories/medbridgeRepository.js"; import {getTranslationAdapter,translateAction,langCode} from "./translation/translationAdapter.js"; import {getAbdmAdapter} from "../../abdm/abdmAdapter.js"; import {getAsrAdapter} from "./asr/asrAdapter.js"; import {prakritiQuestions,resolveDoshaAnswers,scorePrakriti} from "./ayush/prakritiQuestionnaire.js"; import {agniQuestions,kosthaQuestion,scoreAgni,scoreKoshtha} from "./ayush/agniKosthaQuestionnaire.js"; import {checkPrakritiAgniCorrelation} from "./ayush/correlationRules.js"; import {getAssessment,savePatientQuestionnaire,saveClinicalAssessment} from "./repositories/ayurvedicAssessmentRepository.js";
 const app=Fastify({logger:true}); await app.register(cors,{origin:true,methods:["GET","HEAD","POST","PATCH","PUT","DELETE"]}); await app.register(multipart,{limits:{fileSize:25*1024*1024,files:1}});
 app.post("/v1/abha/otp/request",async(req:any,res)=>{const mobile=String(req.body?.mobile||"").trim();if(!/^[0-9+ -]{8,18}$/.test(mobile))return res.code(400).send({error:"valid_mobile_required"});return requestOtp(mobile)});
 app.post("/v1/abha/otp/verify",async(req:any,res)=>{try{return await verifyOtp(req.body?.transaction_id,req.body?.otp)}catch(e:any){return res.code(401).send({error:e.message||"otp_verification_failed"})}});
@@ -55,5 +55,32 @@ app.post("/v1/abdm/push",async(req:any,res)=>{
  const bundle=evidenceBundle(patientId,[evidence]);
  const result=await adapter.pushHealthInformation({consentRequestId:consent.consentRequestId,patientId,fhirBundle:bundle,verificationStatus:evidence.verificationStatus});
  return {link,consent,result};
+});
+app.get("/v1/ayush/questionnaire",async()=>({prakritiQuestions,agniQuestions,kosthaQuestion}));
+app.post("/v1/ayush/patients/:patientId/questionnaire",async(req:any)=>{
+ const b=req.body||{};const patientId=req.params.patientId;const now=new Date().toISOString();
+ const {scores,primary}=scorePrakriti(resolveDoshaAnswers(b.prakriti_answers||{}));
+ const agniType=scoreAgni(b.agni_answers||[]);
+ const kosthaType=scoreKoshtha(b.koshtha_answer||"");
+ const alerts=checkPrakritiAgniCorrelation(scores,agniType);
+ return savePatientQuestionnaire(patientId,{
+  prakriti:{primary,scores,source:"patient_questionnaire",assessedAt:now},
+  agni:{type:agniType,source:"patient_questionnaire",assessedAt:now},
+  koshtha:{type:kosthaType,source:"patient_questionnaire",assessedAt:now},
+  mala:{purisha:b.mala?.purisha,mutra:b.mala?.mutra,sweda:b.mala?.sweda,source:"patient_questionnaire",assessedAt:now},
+  alerts
+ });
+});
+app.get("/v1/ayush/patients/:patientId/assessment",async(req:any,res)=>{const a=await getAssessment(req.params.patientId);return a||res.code(404).send({error:"assessment_not_found"})});
+app.post("/v1/medbridge/sessions/:id/ayush/clinical",async(req:any,res)=>{
+ try{
+  const ctx=await getMedBridgeContext(req.params.id);
+  const b=req.body||{};const now=new Date().toISOString();const patch:any={};
+  if(b.vikriti)patch.vikriti={vataVitiation:!!b.vikriti.vata_vitiation,pittaVitiation:!!b.vikriti.pitta_vitiation,kaphaVitiation:!!b.vikriti.kapha_vitiation,notes:b.vikriti.notes,assessedBy:"clinician",assessedAt:now};
+  if(b.dhatu)patch.dhatu={...b.dhatu,assessedBy:"clinician",assessedAt:now};
+  if(b.trividha_pariksha)patch.trividhaPariksha={...b.trividha_pariksha,assessedBy:"clinician",assessedAt:now};
+  if(b.ashtavidha_pariksha)patch.ashtavidhaPariksha={...b.ashtavidha_pariksha,assessedBy:"clinician",assessedAt:now};
+  return await saveClinicalAssessment(ctx.patient.patient_id,patch);
+ }catch(e:any){return res.code(403).send({error:e.message})}
 });
 await app.listen({port:config.port,host:"0.0.0.0"});
