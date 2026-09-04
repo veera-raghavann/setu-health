@@ -1,6 +1,25 @@
 {
-  "name":"@setu/prism-api","private":true,"version":"0.2.0","type":"module",
-  "scripts":{"dev":"tsx watch src/server.ts","start":"tsx src/server.ts","test":"tsx --test tests/*.test.ts"},
-  "dependencies":{"@fastify/cors":"latest","@fastify/jwt":"latest","@fastify/multipart":"latest","fastify":"latest","pg":"latest","tsx":"latest","typescript":"latest","zod":"latest"},
-  "devDependencies":{"@types/node":"latest"}
+  "name": "@setu/prism-api",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "latest",
+    "@fastify/jwt": "latest",
+    "@fastify/multipart": "latest",
+    "dotenv": "^17.4.2",
+    "fastify": "latest",
+    "pg": "latest",
+    "tsx": "latest",
+    "typescript": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest"
+  }
 }

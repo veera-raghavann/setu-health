@@ -47,3 +47,4 @@ venv/
 test-data/local/
 *.sqlite
 *.db
+services/prism-api/data/
