@@ -10,6 +10,12 @@ create table if not exists document_evidence (
  source_page integer,
  source_text text,
  confidence numeric,
+ observed_at timestamptz,
+ category text,
+ fhir_resource_type text,
+ fhir_projection_status text default 'pending',
+ original_resource_id uuid,
+ source_region jsonb,
  created_at timestamptz not null default now()
 );
 create index if not exists document_evidence_resource_idx on document_evidence(resource_id);
