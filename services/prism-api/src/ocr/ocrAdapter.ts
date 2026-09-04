@@ -1,3 +1,3 @@
 import type {OcrResult} from "./types.js";
-export interface OcrAdapter{extract(input:{resourceId:string;mediaType:string;bytes?:Buffer}):Promise<OcrResult>}
-export class PaddleOcrAdapter implements OcrAdapter{async extract(input:{resourceId:string;mediaType:string;bytes?:Buffer}):Promise<OcrResult>{return{engine:"paddleocr",languageHints:["eng"],pages:[],status:"failed",error:"PaddleOCR worker adapter is not yet connected. This contract prevents API architecture from depending on a specific OCR runtime."}}}
+export interface OcrAdapter{extract(input:{resourceId:string;mediaType:string;bytes?:Buffer;languageHint?:string}):Promise<OcrResult>}
+export class PaddleOcrAdapter implements OcrAdapter{async extract(input:{resourceId:string;mediaType:string;bytes?:Buffer;languageHint?:string}):Promise<OcrResult>{return{engine:"paddleocr",languageHints:input.languageHint?[input.languageHint]:["unknown"],pages:[],status:"failed",error:"PaddleOCR worker adapter is not connected."}}}

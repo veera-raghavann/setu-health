@@ -1,11 +1,18 @@
 {
   "name": "setu-health",
   "private": true,
-  "workspaces": ["apps/*", "services/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "npm --workspace @setu/prism-api run dev",
-    "dev:web": "npm --workspace @setu/patient-web run dev",
+    "dev:web": "npm --workspace @setu/patient-web run dev -- --host 0.0.0.0",
     "build": "npm --workspace @setu/patient-web run build",
-    "test": "npm --workspace @setu/prism-api test"
+    "test": "npm --workspace @setu/prism-api test",
+    "dev:api": "npm --workspace @setu/prism-api run dev",
+    "dev:ocr": "cd services/prism-ocr-worker && uvicorn main:app --reload --host 0.0.0.0 --port 8100",
+    "prism:up": "docker compose up --build"
   }
 }

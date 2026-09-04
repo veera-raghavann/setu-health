@@ -1,0 +1,4 @@
+export type IntakeField="chief_complaint"|"onset"|"progression"|"associated_symptoms"|"severity"|"medications"|"allergies"|"past_history";
+export type ExtractedFact={field:IntakeField;value:string;confidence:number;source:"patient_reported";evidence:string};
+export type ConversationInterpretation={intent:"ANSWER"|"NEW_HEALTH_CONCERN"|"RECORD_UPLOAD"|"ABHA_CONNECT"|"PROFILE_UPDATE"|"UNKNOWN";facts:ExtractedFact[];confidence:number;needsClarification:boolean};
+export type ConversationModel={interpret(input:{text:string;expectedField?:IntakeField;language:string;context:Record<string,unknown>}):Promise<ConversationInterpretation>};
