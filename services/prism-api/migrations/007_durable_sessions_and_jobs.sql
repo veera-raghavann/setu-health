@@ -1,6 +1,6 @@
 create table if not exists prism_processing_jobs (
  id uuid primary key,
- resource_id uuid not null references patient_resources(resource_id) on delete cascade,
+ resource_id uuid not null references resources(id) on delete cascade,
  status text not null check(status in ('queued','processing','completed','failed')),
  attempt integer not null default 0,
  error text,
