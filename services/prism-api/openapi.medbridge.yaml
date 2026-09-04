@@ -1,0 +1,83 @@
+openapi: 3.0.3
+info:
+  title: SETU MedBridge API
+  version: 1.0.0
+  description: Consent-bound API for sharing SETU/PRISM patient context with the Base44 MedBridge application.
+servers:
+  - url: https://YOUR_PUBLIC_SETU_API
+paths:
+  /v1/medbridge/patients/{healthId}/context:
+    get:
+      summary: Get patient context for MedBridge discovery
+      parameters:
+        - in: path
+          name: healthId
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Patient context}
+        '404': {description: Patient not found}
+  /v1/medbridge/consent/request:
+    post:
+      summary: Create a clinician consent request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [health_id, doctor_name]
+              properties:
+                health_id: {type: string}
+                doctor_name: {type: string}
+                doctor_id: {type: string}
+      responses:
+        '200': {description: Consent request created}
+  /v1/medbridge/consent/verify:
+    post:
+      summary: Verify the patient consent OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [consent_request_id, otp_code, doctor_name]
+              properties:
+                consent_request_id: {type: string}
+                otp_code: {type: string}
+                doctor_name: {type: string}
+                doctor_id: {type: string}
+      responses:
+        '200': {description: Access session created}
+        '401': {description: Consent rejected}
+  /v1/medbridge/sessions/{sessionId}/context:
+    get:
+      summary: Read consented patient context
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Consent-bound context}
+        '403': {description: Session expired or invalid}
+  /v1/medbridge/sessions/{sessionId}/reconcile:
+    post:
+      summary: Run MedBridge reconciliation for a consented session
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: {type: string}
+      responses:
+        '200': {description: Reconciliation result}
+        '403': {description: Session expired or invalid}
+components:
+  securitySchemes:
+    SetuApiKey:
+      type: apiKey
+      in: header
+      name: X-SETU-API-Key
+security:
+  - SetuApiKey: []
