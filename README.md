@@ -62,7 +62,7 @@ infrastructure/ Deployment and environment configuration
 tests/          Cross-service and integration tests
 ```
 
-## Current engineering focus: PRISM
+## Current engineering focus: PRISM + MedBridge continuity
 
 PRISM is the first production workstream. Its boundaries are deliberately defined so that OCR, Indian-language ASR, and the patient client can be developed independently and then converge on one shared clinical evidence contract.
 
@@ -118,7 +118,7 @@ Use **one branch per PRISM issue**. Do not create extra branch layers such as `f
 
 ## Development status
 
-This repository is the production engineering foundation. The existing MedBridge prototype and research work inform the architecture; they will be integrated through deliberate, reviewed modules rather than copied wholesale into the production codebase.
+This repository now contains an integrated SETU demonstration stack: PRISM patient intake, source-aware OCR records, OTP-based demo identity continuity, a shared patient data layer, and MedBridge consented reconciliation. Hospital-linked records used during the demonstration are explicitly labelled as demo data. Production ABDM/ABHA connectivity remains credential-gated and is not claimed by this prototype.
 
 ## Documentation
 
